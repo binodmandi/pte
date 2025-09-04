@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lifeboygaming</title>
+  <style>
+    body {
+      background-color: black;
+      color: #00ff00;
+      font-family: monospace;
+      font-size: 16px;
+      margin: 0;
+      padding: 10px;
+    }
+    #loading {
+      white-space: pre-wrap;
+    }
+    #terminal {
+      display: none;
+      white-space: pre-wrap;
+    }
+    .line {
+      display: flex;
+      align-items: center;
+    }
+    .prompt {
+      color: #00ff00;
+      font-weight: bold;
+    }
+    input {
+      background: black;
+      border: none;
+      color: #00ff00;
+      font-family: monospace;
+      font-size: 16px;
+      flex: 1;
+      outline: none;
+    }
+    /* Neofetch colors */
+    .c1 { color: red; }
+    .c2 { color: green; }
+    .c3 { color: yellow; }
+    .c4 { color: blue; }
+    .c5 { color: magenta; }
+    .c6 { color: cyan; }
+    .c7 { color: white; }
+    .c8 { color: gray; }
+  </style>
+</head>
+<body>
+  <div id="loading"></div>
+
+  <div id="terminal">
+    <div>Last login: Sat Aug 24 19:41:20 2025 from 172.31.0.2 Type help for more command!</div>
+    <div class="line">
+      <span class="prompt">root@lifeboygaming:~# </span>
+      <input id="cmdInput" autofocus />
+    </div>
+  </div>
+
+  <script>
+    const loading = document.getElementById("loading");
+    const terminal = document.getElementById("terminal");
+
+    const messages = [
+      "Connecting to 172.31.0.2 ...",
+      "Authenticating with public key...",
+      "Access granted.",
+      "Welcome to Ubuntu 20.04.3 LTS (GNU/Linux 5.15.39-1-pve x86_64)",
+      ""
+    ];
+
+    let i = 0;
+    function showLoading() {
+      if (i < messages.length) {
+        loading.innerHTML += messages[i] + "\n";
+        i++;
+        setTimeout(showLoading, 700);
+      } else {
+        loading.style.display = "none";
+        terminal.style.display = "block";
+        document.getElementById("cmdInput").focus();
+      }
+    }
+    showLoading();
+
+    function getFakeUptime() {
+      const hours = Math.floor(Math.random() * 24);
+      const minutes = Math.floor(Math.random() * 60);
+      return ` ${hours}:${minutes < 10 ? "0" + minutes : minutes},  1 user,  load average: 0.00, 0.01, 0.05`;
+    }
+
+    const commandHistory = [];
+
+    function runCommand(command) {
+      commandHistory.push(command);
+
+      // Original commands
+      if (command === "help") return "Available commands:\nhelp, ls, cat, uptime, neofetch, lifeboygaming, echo [text], clear, pwd, whoami, df, top, date, ping, ifconfig, uname, cal, history, touch [file]";
+      if (command === "ls") return "file1.txt   file2.txt   script.sh   secret.key   logs   notes.txt   data.csv";
+      if (command.startsWith("cat ")) {
+        if (command === "cat file1.txt") return "This is file1.txt content.";
+        if (command === "cat file2.txt") return "This is file2.txt content.";
+        if (command === "cat script.sh") return "#!/bin/bash\necho 'Hello World!'";
+        if (command === "cat secret.key") return "----BEGIN FAKE SSH KEY----\nMIIBIjANBgkqh...FAKEKEY...IDAQAB\n----END FAKE SSH KEY----";
+        if (command === "cat notes.txt") return "Remember to drink water and code daily!";
+        if (command === "cat data.csv") return "Name,Score\nAlice,100\nBob,95";
+        return "cat: No such file or directory";
+      }
+      if (command === "uptime") return " 19:41:20 up" + getFakeUptime();
+      if (command === "neofetch") return `
+<span class="c2">            .-/+oossssoo+/-.               </span> root@<span class="c4">lifeboygaming</span>
+<span class="c2">        \`:+ssssssssssssssssss+:\`           </span> ------------------
+<span class="c2">      -+ssssssssssssssssssyyssss+-         </span> <span class="c3">OS:</span> Ubuntu 20.04.3 LTS x86_64
+<span class="c2">    .ossssssssssssssssssdMMMNysssso.       </span> <span class="c5">Host:</span> Proxmox Virtual Environment
+<span class="c2">   /ssssssssssshdmmNNmmyNMMMMhssssss/      </span> <span class="c6">Kernel:</span> 5.15.39-1-pve
+<span class="c2">  +ssssssssshmydMMMMMMMNddddyssssssss+     </span> <span class="c7">Uptime:</span> ${getFakeUptime()}
+<span class="c2"> /sssssssshNMMMyhhyyyyhmNMMMNhssssssss/    </span> <span class="c8">Packages:</span> 1023 (dpkg)
+<span class="c2">.ssssssssdMMMNhsssssssssshNMMMdssssssss.   </span> <span class="c2">Shell:</span> bash 5.0.17
+<span class="c2">+sssshhhyNMMNyssssssssssssyNMMMysssssss+   </span> <span class="c3">CPU:</span> AMD Ryzen Threadripper PRO 7995WX (64) @ 5.1GHz
+<span class="c2">ossyNMMMNyMMhsssssssssssssshmmmhssssssso   </span> <span class="c4">GPU:</span> NVIDIA RTX 5090 24GB
+<span class="c2">ossyNMMMNyMMhsssssssssssssshmmmhssssssso   </span> <span class="c5">Memory:</span> 10240MiB / 65536MiB
+<span class="c2">+sssshhhyNMMNyssssssssssssyMSSMysssssss+   </span>
+<span class="c2">.ssssssssdMMMNhsssssssssshNMMMdssssssss.   </span>
+<span class="c2"> /sssssssshNMMMyhhyyyyhdNMMMNhssssssss/    </span>
+<span class="c2">  +sssssssssdmydMMMMMMMMddddyssssssss+     </span>
+<span class="c2">   /ssssssssssshdmNNNNmyNMMMMhssssss/      </span>
+<span class="c2">    .ossssssssssssssssssdMMMNysssso.       </span>
+<span class="c2">      -+sssssssssssssssssyyyssss+-         </span>
+<span class="c2">        \`:+ssssssssssssssssss+:\`           </span>
+<span class="c2">            .-/+oossssoo+/-.               </span>
+`;
+      if (command === "lifeboygaming") return `LIFEBOYGAMING
+REAL NAME: VIRAT
+ABOUT ME: I'm a professional Website Developer, Minecraft Developer, and Plugin Creator.
+
+📌 CONTACT: Discord - <b>lifeboygaming</b>
+
+💡 Currently no active project.
+✔ I accept both paid and free work.
+
+🙏 Regards,
+<b>LIFEBOYGAMING</b>`;
+      if (command.startsWith("echo ")) return command.replace("echo ", "");
+
+      // ✅ Extra 50+ commands
+      if (command === "pwd") return "/root";
+      if (command === "whoami") return "root";
+      if (command === "df") return "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1       100G   25G   70G  27% /";
+      if (command === "top") return "PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND\n1234 root      20   0  500M   50M   10M R   0.3  0.1   0:01.23 bash";
+      if (command === "date") return new Date().toString();
+      if (command === "ping") return "PING 127.0.0.1 (127.0.0.1): 56 data bytes\n64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.042 ms";
+      if (command === "ifconfig") return "eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n    inet 127.0.0.1  netmask 255.0.0.0  broadcast 127.255.255.255";
+      if (command === "uname") return "Linux lifeboygaming 5.15.39-1-pve x86_64 GNU/Linux";
+      if (command === "cal") return "    August 2025\nSu Mo Tu We Th Fr Sa\n                1  2\n 3  4  5  6  7  8  9\n10 11 12 13 14 15 16\n17 18 19 20 21 22 23\n24 25 26 27 28 29 30\n31";
+      if (command === "history") return commandHistory.join("\n");
+      if (command.startsWith("touch ")) return `${command.replace("touch ", "")} created.`;
+      if (command.startsWith("mkdir ")) return `${command.replace("mkdir ", "")} directory created.`;
+      if (command.startsWith("rm ")) return `${command.replace("rm ", "")} removed.`;
+      if (command === "lsblk") return "NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT\nsda      8:0    0  100G  0 disk /";
+      if (command === "free") return "              total        used        free      shared  buff/cache   available\nMem:        65536       10240       51200         512       5120       53000";
+      if (command === "ps") return "PID TTY          TIME CMD\n1234 pts/0    00:00:01 bash";
+      if (command === "kill 1234") return "Process 1234 killed.";
+      if (command === "jobs") return "[1]+ Running bash";
+      if (command === "fg") return "bash";
+      if (command === "bg") return "bash &";
+      if (command === "mount") return "/dev/sda1 on / type ext4 (rw,relatime)";
+      if (command === "dpkg -l") return "ii  bash  5.0.17-1";
+      if (command === "apt list --installed") return "bash/now 5.0.17 amd64";
+      if (command === "alias ll='ls -la'") return "alias set: ll='ls -la'";
+      if (command === "env") return "PATH=/usr/bin:/bin\nHOME=/root\nLANG=C.UTF-8";
+      if (command.startsWith("export ")) return `${command.replace("export ", "")} exported`;
+      if (command === "curl https://example.com") return "<!doctype html><html><body>Example Page</body></html>";
+      if (command === "wget https://example.com") return "Downloaded example.com";
+      if (command === "man ls") return "LS(1) User Commands\nList directory contents";
+      if (command === "uptime -p") return "up 2 hours, 35 minutes";
+      if (command === "who") return "root     pts/0        2025-08-24 19:41 (:0)";
+      if (command === "hostname") return "lifeboygaming";
+      if (command === "uptime -s") return "2025-08-24 17:06:20";
+      if (command === "uname -r") return "5.15.39-1-pve";
+      if (command === "ls -la") return ".  ..  file1.txt  file2.txt  script.sh  secret.key";
+      if (command === "cat /etc/os-release") return "NAME=\"Ubuntu\"\nVERSION=\"20.04.3 LTS (Focal Fossa)\"";
+      if (command === "date +%Y-%m-%d") return new Date().toISOString().split("T")[0];
+      if (command === "date +%H:%M:%S") return new Date().toTimeString().split(" ")[0];
+      if (command === "clear") {
+        terminal.innerHTML =
+          '<div>Last login: Sat Aug 24 19:41:20 2025 from 172.31.0.2 Type help for more command!</div>' +
+          '<div class="line"><span class="prompt">root@lifeboygaming:~# </span><input id="cmdInput" autofocus /></div>';
+        attachHandler(document.getElementById("cmdInput"));
+        return null;
+      }
+
+      return "bash: " + command + ": command not found";
+    }
+
+    function attachHandler(input) {
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          const command = input.value.trim();
+          let output = runCommand(command);
+
+          const executed = document.createElement("div");
+          executed.innerHTML = `<span class="prompt">root@lifeboygaming:~# </span>${command}`;
+          terminal.insertBefore(executed, input.parentNode);
+
+          if (output) {
+            const out = document.createElement("div");
+            out.innerHTML = output;
+            terminal.insertBefore(out, input.parentNode);
+          }
+
+          input.value = "";
+        }
+      });
+    }
+
+    attachHandler(document.getElementById("cmdInput"));
+  </script>
+</body>
+</html>
+
+
